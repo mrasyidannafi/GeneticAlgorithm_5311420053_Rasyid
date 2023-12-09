@@ -3,6 +3,9 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 from sklearn.metrics import accuracy_score
+import warnings
+warnings.filterwarnings("ignore")
+
 
 class NB:
     def prediksi(self, X):
@@ -113,25 +116,67 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 # Define Naive Bayes model
 nb_model = NB()
-
 # Use genetic algorithm for feature selection
 feature_selector = FeatureSelectionGA(model=nb_model, feature_names=feature_names)
 best_features, selected_feature_names = feature_selector.optimize(X_train, X_test, y_train, y_test)
 
-print("\n")
+print("Dengan parameter default")
+print()
 print("Best Features:", best_features)
 print("Selected Feature Names:", selected_feature_names)
-print("\n")
+print()
 
 # Train Naive Bayes with the best features
 nb_model.fit(X_train[:, best_features], y_train)
 y_pred = nb_model.prediksi(X_test[:, best_features])
 accuracy = accuracy_score(y_test, y_pred)
-print(f"With feature selection, accuracy: {accuracy * 100:.2f}%")
+print(f"accuracy: {accuracy * 100:.2f}%")
+print()
+print("#"*30)
+print("\n\n")
+
+
+
+nb_model1 = NB()
+# Use genetic algorithm for feature selection
+feature_selector1 = FeatureSelectionGA(model=nb_model1, feature_names=feature_names, population_size=100, generations=3, crossover_prob=0.7, mutation_prob=1)
+best_features1, selected_feature_names1 = feature_selector1.optimize(X_train, X_test, y_train, y_test)
+
+print("Dengan parameter (generations=5, crossover_prob=0.5, mutation_prob=0.5)")
+print()
+print("Best Features:", best_features1)
+print("Selected Feature Names:", selected_feature_names1)
+print()
+
+# Train Naive Bayes with the best features
+nb_model1.fit(X_train[:, best_features1], y_train)
+y_pred = nb_model1.prediksi(X_test[:, best_features1])
+accuracy = accuracy_score(y_test, y_pred)
+print(f"accuracy: {accuracy * 100:.2f}%")
+print()
+print("#"*30)
+print("\n\n")
+
+
+
 
 # Train Naive Bayes without feature selection
 nb_model_no_fs = NB()
 nb_model_no_fs.fit(X_train, y_train)
 y_pred_no_fs = nb_model_no_fs.prediksi(X_test)
 accuracy_no_fs = accuracy_score(y_test, y_pred_no_fs)
-print(f"Without feature selection, accuracy: {accuracy_no_fs * 100:.2f}%")
+print(f"Without feature selection\naccuracy: {accuracy_no_fs * 100:.2f}%")
+print("#"*30)
+print("\n\n")
+
+
+
+
+
+import random
+kelas = ["B", "M"]
+print("Mencoba prediksi dengan data random emnggunakan feature selection parameter default")
+data = [random.randint(1, 10) for i in range(len(best_features))]
+prediksi = nb_model.prediksi([data])
+print("Dari nilai data berikut", data)
+print(f"Hasil prediksi menunjukkan bahwa data tersebut merupakan kelas {kelas[prediksi[0]]}")
